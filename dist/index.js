@@ -126,6 +126,7 @@ function run() {
             core.debug(`Using config - ${JSON.stringify(userConfig)}`);
             const config = (0, parseConfig_1.parseConfig)(userConfig);
             const contextPayload = github.context.payload;
+            core.debug('Labels: ' + contextDetails.labels.join(', '));
             core.debug('Assigning reviewers...');
             const assignedResult = yield (0, assignReviewersAsync_1.assignReviewersAsync)({
                 client,
@@ -217,8 +218,9 @@ const setReviewersAsync_1 = __nccwpck_require__(5062);
  */
 function assignReviewersAsync(_a) {
     return __awaiter(this, arguments, void 0, function* ({ client, labelReviewers, contextDetails, contextPayload }) {
+        core.debug('Assigning reviewers... Labels: ' + contextDetails.labels.join(', '));
         if (contextDetails == null) {
-            return {
+          return {
                 status: 'error',
                 message: 'No action context'
             };
@@ -253,12 +255,12 @@ function assignReviewersAsync(_a) {
         if (result == null) {
             return {
                 status: 'info',
-                message: 'No reviewers to assign'
+                message: 'No reviewers to assign - Labels: ' + labels.join(', '),
             };
         }
         return {
             status: 'success',
-            message: 'Reviewers have been assigned',
+            message: 'Reviewers have been assigned - Labels: ' + labels.join(', '),
             data: { url: result.url, reviewers: reviewersToAssign }
         };
     });
