@@ -134,4 +134,9 @@ function setResultOutput(
   core.setOutput(`${assignType}_message`, result.message)
   core.setOutput(`${assignType}_url`, result.data?.url)
   core.setOutput(`${assignType}_reviewers`, result.data?.reviewers)
+
+  core.debug(`${assignType}_status` + result.status)
+  core.debug(`${assignType}_message` + result.message)
+  core.debug(`${assignType}_url` + result.data?.url)
+  core.debug(`${assignType}_reviewers` + result.data?.reviewers)
 }
