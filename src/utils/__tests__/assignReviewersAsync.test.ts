@@ -23,7 +23,11 @@ describe('assignReviewersAsync', () => {
     const result = await assignReviewersAsync({
       client: mockClient,
       contextPayload: {},
-      contextDetails: {labels: ['test', 'test1'], reviewers: ['reviewer1']},
+      contextDetails: {
+        labels: ['test', 'test1'],
+        reviewers: ['reviewer1'],
+        baseSha: ''
+      },
       labelReviewers: {
         test: ['reviewer1', 'reviewer2'],
         test1: ['reviewer3']
@@ -83,7 +87,8 @@ describe('assignReviewersAsync', () => {
       contextPayload: {},
       contextDetails: {
         labels: ['test', 'test1'],
-        reviewers: ['reviewer1', 'reviewer2', 'reviewer3']
+        reviewers: ['reviewer1', 'reviewer2', 'reviewer3'],
+        baseSha: ''
       },
       labelReviewers: {
         test: ['reviewer1', 'reviewer2'],
@@ -109,7 +114,8 @@ describe('assignReviewersAsync', () => {
       contextPayload: {},
       contextDetails: {
         labels: ['test', 'test1'],
-        reviewers: ['reviewer1', 'reviewer2']
+        reviewers: ['reviewer1', 'reviewer2'],
+        baseSha: ''
       },
       labelReviewers: {
         test: ['reviewer1', 'reviewer2'],

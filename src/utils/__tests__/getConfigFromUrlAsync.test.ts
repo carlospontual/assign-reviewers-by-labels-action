@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {rest} from 'msw'
+import {http, HttpResponse} from 'msw'
 import {setupServer} from 'msw/node'
 
 import {getConfigFromUrlAsync} from '../getConfigFromUrlAsync'
@@ -9,24 +9,26 @@ const mockUrl = 'http://localhost:8080'
 
 describe('getConfigFromUrlAsync', () => {
   const server = setupServer(
-    rest.get(`${mockUrl}/success`, (req, res, ctx) => {
-      if (req.headers.get('test') !== 'header') {
-        return res(ctx.status(403))
+    http.get(`${mockUrl}/success`, req => {
+      if (req.request.headers.get('test') !== 'header') {
+        return new HttpResponse(null, {
+          status: 403
+        })
       }
 
-      return res(
-        ctx.json({
-          assign: {
-            test: ['reviewer1', 'reviewer2']
-          }
-        })
-      )
+      return HttpResponse.json({
+        assign: {
+          test: ['reviewer1', 'reviewer2']
+        }
+      })
     }),
-    rest.get(`${mockUrl}/500`, (req, res, ctx) => {
-      return res(ctx.status(500))
+    http.get(`${mockUrl}/500`, _ => {
+      return new HttpResponse(null, {
+        status: 500
+      })
     }),
-    rest.get(`${mockUrl}/invalid-format`, (req, res, ctx) => {
-      return res(ctx.text('text'))
+    http.get(`${mockUrl}/invalid-format`, req => {
+      return new HttpResponse('text')
     })
   )
 

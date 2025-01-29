@@ -28,7 +28,7 @@ async function getFileContents(
     throw new Error(`Failed ${result.status} ${ref.slice(0, 7)} ${contentPath}`)
   }
 
-  const data = result.data as typeof result['data'] & {content?: string}
+  const data = result.data as (typeof result)['data'] & {content?: string}
 
   if (!data.content) {
     throw new Error(`No content ${ref.slice(0, 7)} ${contentPath}`)

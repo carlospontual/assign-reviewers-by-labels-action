@@ -24,8 +24,8 @@ vi.mock('@actions/github', () => {
 })
 
 interface MockGithubContext {
-  payload: typeof github.context['payload']
-  repo: typeof github.context['repo']
+  payload: (typeof github.context)['payload']
+  repo: (typeof github.context)['repo']
 }
 
 const mockGithubContext: MockGithubContext = {
