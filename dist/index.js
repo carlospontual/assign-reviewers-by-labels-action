@@ -91,6 +91,7 @@ const assignReviewersAsync_1 = __nccwpck_require__(4789);
 const unassignReviewersAsync_1 = __nccwpck_require__(7410);
 const getConfigFromUrlAsync_1 = __nccwpck_require__(3595);
 const isValidUrl_1 = __nccwpck_require__(7775);
+const console_1 = __nccwpck_require__(4236);
 /**
  * Assign and/or unassign reviewers using labels.
  *
@@ -208,10 +209,10 @@ function getInputLabels(contextDetails) {
             .replace(']', '')
             .trim()
             .split(',')
-            .map(label => label.trim());
-        core.debug('Parsed labels: \n');
+            .map(label => label.replaceAll('\"', '').trim());
+        (0, console_1.log)('Parsed labels: \n');
         parsedLabelsArray.forEach(label => {
-            core.debug(label + ' ');
+            (0, console_1.log)(label + ' ');
         });
         return parsedLabelsArray;
     }

@@ -161,7 +161,7 @@ function getInputLabels(contextDetails: ContextPullRequestDetails): string[] {
       .replace(']', '')
       .trim()
       .split(',')
-      .map(label => label.trim())
+      .map(label => label.replaceAll('\"', '').trim())
 
     core.debug('Parsed labels: \n')
     parsedLabelsArray.forEach(label => {

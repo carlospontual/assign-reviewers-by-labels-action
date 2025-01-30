@@ -418,7 +418,7 @@ describe('main', () => {
         case 'unassign-if-label-removed':
           return false
         case 'input-labels':
-          return '[ testlabel, testlabel2 ]'
+          return '[ " testlabel",   "testlabel2" ]'
         default:
           return false
       }
