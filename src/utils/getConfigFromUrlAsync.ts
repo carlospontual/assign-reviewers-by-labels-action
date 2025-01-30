@@ -23,8 +23,7 @@ export async function getConfigFromUrlAsync<TConfig>(
       }
     })
     if (response.status >= 200 && response.status <= 299) {
-      const json: TConfig = await response.json()
-      return json
+      return (await response.json()) as TConfig
     }
     throw new Error(`Response status (${response.status}) from ${configUrl}`)
   } catch (error) {

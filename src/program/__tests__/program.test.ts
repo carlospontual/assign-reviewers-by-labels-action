@@ -73,7 +73,7 @@ describe('main', () => {
     })
 
     const mockYaml = `
-        assign: 
+        assign:
             testlabel: ['reviewer1', 'reviewer2']
             testlabel2: ['reviewer3', 'reviewer4']
     `
@@ -167,7 +167,7 @@ describe('main', () => {
     })
 
     const mockYaml = `
-        assign: 
+        assign:
             testlabel: ['reviewer1', 'reviewer2']
     `
 
@@ -261,7 +261,7 @@ describe('main', () => {
     })
 
     const mockYaml = `
-        assign: 
+        assign:
             testlabel: ['reviewer1', 'reviewer2']
             testlabel2: ['reviewer3', 'reviewer4']
     `
@@ -389,4 +389,100 @@ describe('main', () => {
   it('should error if the reviewers could not be assigned', async () => {})
 
   it('should error if the reviewers could not be unassigned', async () => {})
+
+  it('should assign new reviewers from labels received as input of the action', async () => {
+    const mockContext = produce(mockGithubContext, draftContext => {
+      draftContext.payload.pull_request!.labels = [
+        {name: 'testlabel3'},
+        {name: 'testlabel4'}
+      ]
+      draftContext.payload.pull_request!.requested_reviewers = []
+    })
+
+    const mockYaml = `
+        assign: 
+            testlabel: ['reviewer1', 'reviewer2']
+            testlabel2: ['reviewer3', 'reviewer4']
+            testlabel3: ['reviewer5', 'reviewer6']
+            testlabel4: ['reviewer7', 'reviewer8']
+    `
+
+    // mock input options
+    // @ts-ignore
+    core.getInput.mockImplementation((input: string) => {
+      switch (input) {
+        case 'repo-token':
+          return 'test-token'
+        case 'config-file':
+          return './mock.yml'
+        case 'unassign-if-label-removed':
+          return false
+        case 'input-labels':
+          return '[ testlabel, testlabel2 ]'
+        default:
+          return false
+      }
+    })
+
+    // @ts-ignore
+    github.context = mockContext
+
+    const requestReviewersMock = vi.fn().mockResolvedValue({
+      url: 'test-url-request'
+    })
+
+    const removeRequestedReviewersMock = vi.fn().mockResolvedValue({
+      url: 'test-url-response'
+    })
+
+    // @ts-ignore
+    github.getOctokit.mockReturnValue({
+      rest: {
+        repos: {
+          getContent: vi.fn().mockResolvedValue({
+            status: 200,
+            data: {
+              content: Buffer.from(mockYaml).toString('base64')
+            }
+          })
+        },
+        pulls: {
+          requestReviewers: requestReviewersMock
+        }
+      }
+    } as unknown as Client)
+
+    await run()
+
+    expect(requestReviewersMock).toHaveBeenCalledTimes(1)
+    expect(requestReviewersMock).toHaveBeenNthCalledWith(1, {
+      owner: 'test-owner',
+      pull_number: 1,
+      repo: 'test-repo',
+      reviewers: ['reviewer1', 'reviewer2', 'reviewer3', 'reviewer4']
+    })
+
+    expect(removeRequestedReviewersMock).toHaveBeenCalledTimes(0)
+
+    expect(core.setOutput).toHaveBeenCalledTimes(8)
+
+    const outputExpect = {
+      unassigned_status: 'info',
+      unassigned_message: 'Skip unassigning reviewers',
+      unassigned_url: undefined,
+      unassigned_reviewers: undefined,
+      assigned_status: 'success',
+      assigned_message: 'Reviewers have been assigned',
+      assigned_url: 'test-url-request',
+      assigned_reviewers: ['reviewer1', 'reviewer2', 'reviewer3', 'reviewer4']
+    }
+
+    Object.keys(outputExpect).forEach((key, index) => {
+      expect(core.setOutput).toHaveBeenNthCalledWith(
+        index + 1,
+        key,
+        outputExpect[key]
+      )
+    })
+  })
 })

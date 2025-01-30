@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 
 import type {AssignReviewersReturn} from '../types'
+import type {ContextPullRequestDetails} from '../types'
 
 import {getYamlConfigAsync} from '../utils/getYamlConfigAsync'
 import {parseConfig} from '../utils/parseConfig'
@@ -9,9 +10,7 @@ import {getContextPullRequestDetails} from '../utils/getContextPullRequestDetail
 import {assignReviewersAsync} from '../utils/assignReviewersAsync'
 import {unassignReviewersAsync} from '../utils/unassignReviewersAsync'
 import {getConfigFromUrlAsync} from '../utils/getConfigFromUrlAsync'
-import type {ContextPullRequestDetails} from '../types'
 import {isValidUrl} from '../utils/isValidUrl'
-
 import {Config} from '../config'
 
 /**
@@ -36,7 +35,6 @@ export async function run(): Promise<void> {
     }
     const inputLabels = getInputLabels(contextDetails)
     core.debug('Input Labels: ' + inputLabels)
-
     let userConfig: Config | null
 
     if (isValidUrl(configFilePath)) {
@@ -158,6 +156,17 @@ function getInputLabels(contextDetails: ContextPullRequestDetails): string[] {
   ) {
     return contextDetails.labels
   } else {
-    return inputLabels.split(',')
+    var parsedLabelsArray = inputLabels
+      .replace('[', '')
+      .replace(']', '')
+      .trim()
+      .split(',')
+      .map(label => label.trim())
+
+    core.debug('Parsed labels: \n')
+    parsedLabelsArray.forEach(label => {
+      core.debug(label + ' ')
+    })
+    return parsedLabelsArray
   }
 }

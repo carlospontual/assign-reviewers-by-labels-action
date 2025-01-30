@@ -91,7 +91,6 @@ const assignReviewersAsync_1 = __nccwpck_require__(4789);
 const unassignReviewersAsync_1 = __nccwpck_require__(7410);
 const getConfigFromUrlAsync_1 = __nccwpck_require__(3595);
 const isValidUrl_1 = __nccwpck_require__(7775);
-const console_1 = __nccwpck_require__(4236);
 /**
  * Assign and/or unassign reviewers using labels.
  *
@@ -197,7 +196,6 @@ function getInputLabels(contextDetails) {
     var inputLabels = core.getInput('input-labels', {
         required: false
     });
-    (0, console_1.log)('Input labels: ' + inputLabels);
     core.debug('Input labels: ' + inputLabels);
     if (typeof inputLabels === 'undefined' ||
         inputLabels == null ||
@@ -205,7 +203,17 @@ function getInputLabels(contextDetails) {
         return contextDetails.labels;
     }
     else {
-        return inputLabels.split(',');
+        var parsedLabelsArray = inputLabels
+            .replace('[', '')
+            .replace(']', '')
+            .trim()
+            .split(',')
+            .map(label => label.trim());
+        core.debug('Parsed labels: \n');
+        parsedLabelsArray.forEach(label => {
+            core.debug(label + ' ');
+        });
+        return parsedLabelsArray;
     }
 }
 
@@ -328,8 +336,7 @@ function getConfigFromUrlAsync(configUrl, ref, headers) {
                 headers: Object.assign({ 'content-type': 'application/json' }, headers)
             });
             if (response.status >= 200 && response.status <= 299) {
-                const json = yield response.json();
-                return json;
+                return (yield response.json());
             }
             throw new Error(`Response status (${response.status}) from ${configUrl}`);
         }
