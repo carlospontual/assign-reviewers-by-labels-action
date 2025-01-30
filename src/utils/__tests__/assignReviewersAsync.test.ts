@@ -31,7 +31,8 @@ describe('assignReviewersAsync', () => {
       labelReviewers: {
         test: ['reviewer1', 'reviewer2'],
         test1: ['reviewer3']
-      }
+      },
+      inputLabels: ['test', 'test1']
     })
 
     expect(result).toEqual({
@@ -62,7 +63,8 @@ describe('assignReviewersAsync', () => {
       labelReviewers: {
         test: ['reviewer1', 'reviewer2'],
         test1: ['reviewer3']
-      }
+      },
+      inputLabels: []
     })
 
     expect(result).toEqual({
@@ -93,7 +95,8 @@ describe('assignReviewersAsync', () => {
       labelReviewers: {
         test: ['reviewer1', 'reviewer2'],
         test1: ['reviewer3']
-      }
+      },
+      inputLabels: ['test', 'test1']
     })
 
     expect(result).toEqual({
@@ -120,7 +123,8 @@ describe('assignReviewersAsync', () => {
       labelReviewers: {
         test: ['reviewer1', 'reviewer2'],
         test1: ['reviewer3']
-      }
+      },
+      inputLabels: ['test', 'test1']
     })
 
     expect(result).toEqual({

@@ -9,6 +9,7 @@ import {getContextPullRequestDetails} from '../utils/getContextPullRequestDetail
 import {assignReviewersAsync} from '../utils/assignReviewersAsync'
 import {unassignReviewersAsync} from '../utils/unassignReviewersAsync'
 import {getConfigFromUrlAsync} from '../utils/getConfigFromUrlAsync'
+import type {ContextPullRequestDetails} from '../types'
 import {isValidUrl} from '../utils/isValidUrl'
 
 import {Config} from '../config'
@@ -33,6 +34,8 @@ export async function run(): Promise<void> {
     if (contextDetails == null) {
       throw new Error('No context details')
     }
+    const inputLabels = getInputLabels(contextDetails)
+    core.debug('Input Labels: ' + inputLabels)
 
     let userConfig: Config | null
 
@@ -75,7 +78,8 @@ export async function run(): Promise<void> {
       client,
       contextDetails,
       contextPayload,
-      labelReviewers: config.assign
+      labelReviewers: config.assign,
+      inputLabels
     })
 
     if (assignedResult.status === 'error') {
@@ -101,7 +105,8 @@ export async function run(): Promise<void> {
           ]
         },
         contextPayload,
-        labelReviewers: config.assign
+        labelReviewers: config.assign,
+        inputLabels
       })
 
       if (unassignedResult.status === 'error') {
@@ -139,4 +144,20 @@ function setResultOutput(
   core.debug(`${assignType}_message` + result.message)
   core.debug(`${assignType}_url` + result.data?.url)
   core.debug(`${assignType}_reviewers` + result.data?.reviewers)
+}
+
+function getInputLabels(contextDetails: ContextPullRequestDetails): string[] {
+  var inputLabels = core.getInput('input-labels', {
+    required: false
+  })
+  core.debug('Input labels: ' + inputLabels)
+  if (
+    typeof inputLabels === 'undefined' ||
+    inputLabels == null ||
+    inputLabels.length == 0
+  ) {
+    return contextDetails.labels
+  } else {
+    return inputLabels.split(',')
+  }
 }

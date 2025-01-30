@@ -91,6 +91,7 @@ const assignReviewersAsync_1 = __nccwpck_require__(4789);
 const unassignReviewersAsync_1 = __nccwpck_require__(7410);
 const getConfigFromUrlAsync_1 = __nccwpck_require__(3595);
 const isValidUrl_1 = __nccwpck_require__(7775);
+const console_1 = __nccwpck_require__(4236);
 /**
  * Assign and/or unassign reviewers using labels.
  *
@@ -109,6 +110,8 @@ function run() {
             if (contextDetails == null) {
                 throw new Error('No context details');
             }
+            const inputLabels = getInputLabels(contextDetails);
+            core.debug('Input Labels: ' + inputLabels);
             let userConfig;
             if ((0, isValidUrl_1.isValidUrl)(configFilePath)) {
                 core.debug('🔗 Retrieving config from url...');
@@ -126,13 +129,13 @@ function run() {
             core.debug(`Using config - ${JSON.stringify(userConfig)}`);
             const config = (0, parseConfig_1.parseConfig)(userConfig);
             const contextPayload = github.context.payload;
-            core.debug('Labels: ' + contextDetails.labels.join(', '));
             core.debug('Assigning reviewers...');
             const assignedResult = yield (0, assignReviewersAsync_1.assignReviewersAsync)({
                 client,
                 contextDetails,
                 contextPayload,
-                labelReviewers: config.assign
+                labelReviewers: config.assign,
+                inputLabels
             });
             if (assignedResult.status === 'error') {
                 core.setFailed(assignedResult.message);
@@ -154,7 +157,8 @@ function run() {
                         ]
                     },
                     contextPayload,
-                    labelReviewers: config.assign
+                    labelReviewers: config.assign,
+                    inputLabels
                 });
                 if (unassignedResult.status === 'error') {
                     core.setFailed(unassignedResult.message);
@@ -179,11 +183,30 @@ function run() {
     });
 }
 function setResultOutput(assignType, result) {
-    var _a, _b;
+    var _a, _b, _c, _d;
     core.setOutput(`${assignType}_status`, result.status);
     core.setOutput(`${assignType}_message`, result.message);
     core.setOutput(`${assignType}_url`, (_a = result.data) === null || _a === void 0 ? void 0 : _a.url);
     core.setOutput(`${assignType}_reviewers`, (_b = result.data) === null || _b === void 0 ? void 0 : _b.reviewers);
+    core.debug(`${assignType}_status` + result.status);
+    core.debug(`${assignType}_message` + result.message);
+    core.debug(`${assignType}_url` + ((_c = result.data) === null || _c === void 0 ? void 0 : _c.url));
+    core.debug(`${assignType}_reviewers` + ((_d = result.data) === null || _d === void 0 ? void 0 : _d.reviewers));
+}
+function getInputLabels(contextDetails) {
+    var inputLabels = core.getInput('input-labels', {
+        required: false
+    });
+    (0, console_1.log)('Input labels: ' + inputLabels);
+    core.debug('Input labels: ' + inputLabels);
+    if (typeof inputLabels === 'undefined' ||
+        inputLabels == null ||
+        inputLabels.length == 0) {
+        return contextDetails.labels;
+    }
+    else {
+        return inputLabels.split(',');
+    }
 }
 
 
@@ -193,32 +216,6 @@ function setResultOutput(assignType, result) {
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -232,7 +229,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.assignReviewersAsync = assignReviewersAsync;
 const setReviewersAsync_1 = __nccwpck_require__(5062);
-const core = __importStar(__nccwpck_require__(7484));
 /**
  * Determine the reviewers that should be
  * added depending on the state of the PR. Then,
@@ -244,10 +240,9 @@ const core = __importStar(__nccwpck_require__(7484));
  * as well as data containing those reviewers.
  */
 function assignReviewersAsync(_a) {
-    return __awaiter(this, arguments, void 0, function* ({ client, labelReviewers, contextDetails, contextPayload }) {
-        core.debug('Assigning reviewers... Labels: ' + contextDetails.labels.join(', '));
+    return __awaiter(this, arguments, void 0, function* ({ client, labelReviewers, contextDetails, contextPayload, inputLabels }) {
         if (contextDetails == null) {
-          return {
+            return {
                 status: 'error',
                 message: 'No action context'
             };
@@ -255,7 +250,7 @@ function assignReviewersAsync(_a) {
         const labels = Object.keys(labelReviewers);
         const reviewersByLabels = [];
         for (const label of labels) {
-            if (contextDetails.labels.includes(label)) {
+            if (inputLabels.includes(label)) {
                 reviewersByLabels.push(...labelReviewers[label]);
             }
         }
@@ -282,12 +277,12 @@ function assignReviewersAsync(_a) {
         if (result == null) {
             return {
                 status: 'info',
-                message: 'No reviewers to assign - Labels: ' + labels.join(', '),
+                message: 'No reviewers to assign'
             };
         }
         return {
             status: 'success',
-            message: 'Reviewers have been assigned - Labels: ' + labels.join(', '),
+            message: 'Reviewers have been assigned',
             data: { url: result.url, reviewers: reviewersToAssign }
         };
     });
@@ -699,7 +694,7 @@ const setReviewersAsync_1 = __nccwpck_require__(5062);
  * as well as data containing those reviewers.
  */
 function unassignReviewersAsync(_a) {
-    return __awaiter(this, arguments, void 0, function* ({ client, labelReviewers, contextDetails, contextPayload }) {
+    return __awaiter(this, arguments, void 0, function* ({ client, labelReviewers, contextDetails, contextPayload, inputLabels }) {
         if (contextDetails == null) {
             return {
                 status: 'error',
@@ -710,7 +705,7 @@ function unassignReviewersAsync(_a) {
         const reviewersByLabelInclude = [];
         const reviewersByLabelMiss = [];
         for (const label of labels) {
-            if (!contextDetails.labels.includes(label)) {
+            if (!inputLabels.includes(label)) {
                 reviewersByLabelMiss.push(...labelReviewers[label]);
             }
             else {
@@ -724,7 +719,7 @@ function unassignReviewersAsync(_a) {
             };
         }
         let reviewersToUnassign = [];
-        if (contextDetails.labels.length === 0) {
+        if (inputLabels.length === 0) {
             reviewersToUnassign = [
                 ...new Set([...reviewersByLabelMiss, ...reviewersByLabelInclude])
             ];

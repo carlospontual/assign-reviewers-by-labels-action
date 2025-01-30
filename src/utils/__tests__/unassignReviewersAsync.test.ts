@@ -31,7 +31,8 @@ describe('unassignReviewersAsync', () => {
         test: ['reviewer1'],
         test1: ['reviewer1', 'reviewer2']
       },
-      contextPayload: {}
+      contextPayload: {},
+      inputLabels: []
     })
 
     expect(result).toEqual({
@@ -66,7 +67,8 @@ describe('unassignReviewersAsync', () => {
         test: ['reviewer1'],
         test1: ['reviewer1', 'reviewer2', 'reviewer3']
       },
-      contextPayload: {}
+      contextPayload: {},
+      inputLabels: ['test']
     })
 
     expect(result).toEqual({
@@ -102,7 +104,8 @@ describe('unassignReviewersAsync', () => {
         testlabel2: ['reviewer3', 'reviewer4'],
         testlabel3: ['reviewer5', 'reviewer6']
       },
-      contextPayload: {}
+      contextPayload: {},
+      inputLabels: ['testlabel']
     })
 
     expect(result).toEqual({

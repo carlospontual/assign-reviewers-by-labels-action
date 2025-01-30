@@ -19,6 +19,10 @@ inputs:
     description: 'Unassign reviewers when the reviewers label is removed'
     default: 'true'
     required: false
+  input-labels:
+    description: 'The PR Labels retrieved from github. Otherwise, they will be retrieved from the PR when created (From zero state)'
+    required: false
+    default: null
 outputs:
   assigned_status:
     description: 'Whether reviewers have been assigned successfully'

@@ -88,6 +88,8 @@ describe('main', () => {
           return './mock.yml'
         case 'unassign-if-label-removed':
           return false
+        case 'input-labels':
+          return null
         default:
           return false
       }
@@ -179,6 +181,8 @@ describe('main', () => {
           return './mock.yml'
         case 'unassign-if-label-removed':
           return true
+        case 'input-labels':
+          return null
         default:
           return false
       }
@@ -272,6 +276,8 @@ describe('main', () => {
           return './mock.yml'
         case 'unassign-if-label-removed':
           return true
+        case 'input-labels':
+          return null
         default:
           return false
       }
@@ -360,6 +366,8 @@ describe('main', () => {
           return './mock.yml'
         case 'unassign-if-label-removed':
           return true
+        case 'input-labels':
+          return null
         default:
           return false
       }

@@ -1,28 +1,6 @@
-import type {WebhookPayload} from '@actions/github/lib/interfaces'
-import type {Config} from '../config'
 import type {AssignReviewersReturn, Client} from '../types'
-import type {ContextPullRequestDetails} from './getContextPullRequestDetails'
 import {setReviewersAsync} from './setReviewersAsync'
-
-interface Options {
-  /**
-   * The client to perform actions on github.
-   */
-  client: Client
-  /**
-   * The labels and the reviewers that belong to
-   * each label.
-   */
-  labelReviewers: Config['assign']
-  /**
-   * The pull request details required.
-   */
-  contextDetails: ContextPullRequestDetails
-  /**
-   * The webhook payload.
-   */
-  contextPayload: WebhookPayload
-}
+import {Options} from '../types'
 
 /**
  * Determine the reviewers that should be removed
@@ -38,7 +16,8 @@ export async function unassignReviewersAsync({
   client,
   labelReviewers,
   contextDetails,
-  contextPayload
+  contextPayload,
+  inputLabels
 }: Options): Promise<AssignReviewersReturn> {
   if (contextDetails == null) {
     return {
@@ -53,7 +32,7 @@ export async function unassignReviewersAsync({
   const reviewersByLabelMiss: string[] = []
 
   for (const label of labels) {
-    if (!contextDetails.labels.includes(label)) {
+    if (!inputLabels.includes(label)) {
       reviewersByLabelMiss.push(...labelReviewers[label])
     } else {
       reviewersByLabelInclude.push(...labelReviewers[label])
@@ -69,7 +48,7 @@ export async function unassignReviewersAsync({
 
   let reviewersToUnassign: string[] = []
 
-  if (contextDetails.labels.length === 0) {
+  if (inputLabels.length === 0) {
     reviewersToUnassign = [
       ...new Set([...reviewersByLabelMiss, ...reviewersByLabelInclude])
     ]

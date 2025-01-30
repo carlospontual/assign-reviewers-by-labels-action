@@ -1,7 +1,7 @@
 import type {WebhookPayload} from '@actions/github/lib/interfaces'
 import type {Config} from '../config'
 import type {AssignReviewersReturn, Client} from '../types'
-import type {ContextPullRequestDetails} from './getContextPullRequestDetails'
+import type {ContextPullRequestDetails} from '../types'
 import {setReviewersAsync} from './setReviewersAsync'
 
 interface Options {
@@ -9,6 +9,7 @@ interface Options {
   labelReviewers: Config['assign']
   contextDetails: ContextPullRequestDetails
   contextPayload: WebhookPayload
+  inputLabels: string[]
 }
 
 /**
@@ -25,7 +26,8 @@ export async function assignReviewersAsync({
   client,
   labelReviewers,
   contextDetails,
-  contextPayload
+  contextPayload,
+  inputLabels
 }: Options): Promise<AssignReviewersReturn> {
   if (contextDetails == null) {
     return {
@@ -38,7 +40,7 @@ export async function assignReviewersAsync({
   const reviewersByLabels: string[] = []
 
   for (const label of labels) {
-    if (contextDetails.labels.includes(label)) {
+    if (inputLabels.includes(label)) {
       reviewersByLabels.push(...labelReviewers[label])
     }
   }

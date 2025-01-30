@@ -1,12 +1,7 @@
 import * as github from '@actions/github'
 
 import type {GithubLabel, GithubReviewer} from '../types'
-
-export type ContextPullRequestDetails = {
-  labels: string[]
-  reviewers: string[]
-  baseSha: string
-}
+import type {ContextPullRequestDetails} from '../types'
 
 /**
  * The pull request details from the context.
