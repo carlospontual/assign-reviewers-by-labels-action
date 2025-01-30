@@ -2,6 +2,8 @@
 
 Automatically assign reviewers to pull requests using labels.
 
+The standard version of this project works well when executed after label / unlabel GH hooks. However, some projects need the reviewers to be added as part of the PR creation (Open / Re-Open) process (hooks). Thus, if you have on your flow other actions that add labels to the PR and just add the standard GHA to your project, it won't pick up (identify) the labels added during the flow execution.
+
 ## Usage
 
 ### Add a `.github/assign_label_reviewers.yml` file
@@ -81,6 +83,7 @@ jobs:
 | `unassign-if-label-removed` | Whether to unassign reviewers that belong to a label if the label has been removed  | `true` | `true`
 | `config-file` | The path to the label configuration file or endpoint that returns JSON configuration file | `false` | `.github/assign_label_reviewers.yml`
 | `config-request-headers` | The headers to be passed when calling an endpoint to return the JSON configuration file | `false` | N/A
+| `input-labels` | A list of labels that should be used as the input for this action. This is useful when you want to use the action as part of the Github Open / Re-open process, after other actions have already been executed to add labels to the PR. Example of value: '["label","label2","label3"]' | `false` | null
 
 ### Action outputs
 
@@ -116,6 +119,15 @@ Please note:
 }
 ```
 
+### Using a list of Labels as Input
+
+This fork add the ability to use a list of labels as the input to the action. If a the parameter `input-labels` is provided, then these labels are used as the source to have the reviewers added to the PR.
+
+#### Example of valid input-label:
+'["label","label2","label3"]'
+
+
+
 #### Example Workflow
 
 ```yml
@@ -138,4 +150,5 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           config-file: 'https://www.totallymoney.com/assign-reviewers-label-config.json'
           config-request-headers: '{"Authorization": "Bearer ${{ secrets.API_TOKEN }}"}'
+          input-labels: ${{ needs.previousjob.outputs.labels }}
 ```
