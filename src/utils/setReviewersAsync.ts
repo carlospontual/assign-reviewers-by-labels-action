@@ -52,7 +52,7 @@ export async function setReviewersAsync(
   const prOwner = pullRequest.user.login
 
   const reviewers = options.reviewers.filter(
-    reviewer => reviewer !== prOwner && !reviewer.startsWith('BOT_')
+    reviewer => reviewer !== prOwner && !reviewer.endsWith('[bot]')
   )
 
   if (reviewers.length === 0) {

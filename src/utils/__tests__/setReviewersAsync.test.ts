@@ -51,7 +51,7 @@ describe('setReviewersAsync', () => {
     expect(result).toEqual({url: 'test'})
   })
 
-  it('should filter out BOT_ prefixed reviewers', async () => {
+  it('should filter out bot reviewers with [bot] suffix', async () => {
     const mockRequestReviewers = vi
       .fn()
       .mockImplementation(() => ({url: 'test'}))
@@ -73,7 +73,7 @@ describe('setReviewersAsync', () => {
           }
         }
       },
-      reviewers: ['reviewer1', 'BOT_kgDOCnlnWA', 'reviewer2'],
+      reviewers: ['reviewer1', 'copilot-pull-request-reviewer[bot]', 'reviewer2'],
       action: 'assign'
     })
 
@@ -106,7 +106,7 @@ describe('setReviewersAsync', () => {
           }
         }
       },
-      reviewers: ['test-user', 'BOT_kgDOCnlnWA'],
+      reviewers: ['test-user', 'copilot-pull-request-reviewer[bot]'],
       action: 'assign'
     })
 

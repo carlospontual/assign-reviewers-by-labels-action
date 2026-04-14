@@ -645,7 +645,7 @@ function setReviewersAsync(options) {
         const pullNumber = pullRequest.number;
         const repo = repository.name;
         const prOwner = pullRequest.user.login;
-        const reviewers = options.reviewers.filter(reviewer => reviewer !== prOwner && !reviewer.startsWith('BOT_'));
+        const reviewers = options.reviewers.filter(reviewer => reviewer !== prOwner && !reviewer.endsWith('[bot]'));
         if (reviewers.length === 0) {
             return null;
         }
