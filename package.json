@@ -30,11 +30,9 @@
   "dependencies": {
     "@actions/core": "1.11.1",
     "@actions/github": "^6.0.0",
-    "isomorphic-fetch": "^3.0.0",
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "@types/isomorphic-fetch": "^0.0.39",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.12.0",
     "@typescript-eslint/parser": "^8.22.0",

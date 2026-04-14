@@ -74,7 +74,7 @@ describe('getConfigFromUrlAsync', () => {
         test: 'header'
       })
     }).rejects.toThrowError(
-      `Failed to load configuration for sha "test-ref" - invalid json response body at ${mock500Url}`
+      /Failed to load configuration for sha "test-ref"/
     )
   })
 })
