@@ -22,7 +22,9 @@ export function getContextPullRequestDetails(): ContextPullRequestDetails | null
 
   return {
     labels: labels.map(label => label.name),
-    reviewers: reviewers.map(reviewer => reviewer.login),
+    reviewers: reviewers
+      .filter(reviewer => reviewer.type !== 'Bot')
+      .map(reviewer => reviewer.login),
     baseSha: pullRequest?.base?.sha
   }
 }

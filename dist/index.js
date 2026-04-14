@@ -406,7 +406,9 @@ function getContextPullRequestDetails() {
     const reviewers = pullRequest.requested_reviewers;
     return {
         labels: labels.map(label => label.name),
-        reviewers: reviewers.map(reviewer => reviewer.login),
+        reviewers: reviewers
+            .filter(reviewer => reviewer.type !== 'Bot')
+            .map(reviewer => reviewer.login),
         baseSha: (_a = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.base) === null || _a === void 0 ? void 0 : _a.sha
     };
 }

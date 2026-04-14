@@ -16,6 +16,10 @@ export interface GithubReviewer {
    * The login for the user.
    */
   login: string
+  /**
+   * The type of the account (e.g. 'User', 'Bot').
+   */
+  type: string
 }
 
 export type ReviewerStatus = 'success' | 'error' | 'info'

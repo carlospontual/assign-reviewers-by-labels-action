@@ -50,4 +50,67 @@ describe('setReviewersAsync', () => {
     expect(mockRequestReviewers).toHaveBeenCalledTimes(1)
     expect(result).toEqual({url: 'test'})
   })
+
+  it('should filter out BOT_ prefixed reviewers', async () => {
+    const mockRequestReviewers = vi
+      .fn()
+      .mockImplementation(() => ({url: 'test'}))
+    const mockClient = getMockClient(mockRequestReviewers)
+
+    const result = await setReviewersAsync({
+      client: mockClient,
+      contextPayload: {
+        pull_request: {
+          number: 1,
+          user: {
+            login: 'test-user'
+          }
+        },
+        repository: {
+          name: 'test-repo',
+          owner: {
+            login: 'test-owner'
+          }
+        }
+      },
+      reviewers: ['reviewer1', 'BOT_kgDOCnlnWA', 'reviewer2'],
+      action: 'assign'
+    })
+
+    expect(mockRequestReviewers).toHaveBeenCalledWith({
+      owner: 'test-owner',
+      pull_number: 1,
+      repo: 'test-repo',
+      reviewers: ['reviewer1', 'reviewer2']
+    })
+    expect(result).toEqual({url: 'test'})
+  })
+
+  it('should return null if all reviewers are bots or the PR owner', async () => {
+    const mockRequestReviewers = vi.fn()
+    const mockClient = getMockClient(mockRequestReviewers)
+
+    const result = await setReviewersAsync({
+      client: mockClient,
+      contextPayload: {
+        pull_request: {
+          number: 1,
+          user: {
+            login: 'test-user'
+          }
+        },
+        repository: {
+          name: 'test-repo',
+          owner: {
+            login: 'test-owner'
+          }
+        }
+      },
+      reviewers: ['test-user', 'BOT_kgDOCnlnWA'],
+      action: 'assign'
+    })
+
+    expect(mockRequestReviewers).not.toHaveBeenCalled()
+    expect(result).toBeNull()
+  })
 })
